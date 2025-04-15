@@ -20,14 +20,19 @@ function CyberpunkGrid() {
       grid.appendChild(cell);
     }
 
-    // Animate grid cells
+    // Animate grid cells with flow effect
     anime({
       targets: '.grid-cell',
-      scale: [
-        {value: 0.1, duration: 500, easing: 'easeOutSine'},
-        {value: 1, duration: 1000, easing: 'easeInOutQuad'}
+      translateZ: [
+        {value: [-50, 50], duration: GRID_ANIMATION_DURATION, easing: 'easeInOutSine'},
       ],
-      delay: anime.stagger(200, {grid: [6, 6], from: 'center'}),
+      scale: [
+        {value: [0.8, 1.2], duration: GRID_ANIMATION_DURATION, easing: 'easeInOutQuad'}
+      ],
+      opacity: [
+        {value: [0.5, 1], duration: GRID_ANIMATION_DURATION, easing: 'easeInOutSine'}
+      ],
+      delay: anime.stagger(100, {grid: [6, 6], from: 'center'}),
       loop: true,
       direction: 'alternate',
       autoplay: true
@@ -48,13 +53,31 @@ function CyberpunkGrid() {
   }, []);
 
   return (
-    <div 
-      ref={gridRef} 
-      className="grid grid-cols-6 gap-2 w-full h-full bg-black/80 p-4"
-      style={{
-        minHeight: '300px'
-      }}
-    />
+    <div className="perspective-container">
+      <div 
+        ref={gridRef} 
+        className="grid grid-cols-6 gap-2 w-full h-full bg-black/80 p-4 grid-3d"
+        style={{
+          minHeight: '300px',
+          transform: 'rotateX(45deg)',
+          transformStyle: 'preserve-3d'
+        }}
+      />
+      <style jsx>{`
+        .perspective-container {
+          perspective: ${PERSPECTIVE};
+          perspective-origin: center center;
+        }
+        .grid-3d {
+          transform-style: preserve-3d;
+          animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+          0%, 100% { transform: rotateX(45deg) translateZ(0px); }
+          50% { transform: rotateX(45deg) translateZ(20px); }
+        }
+      `}</style>
+    </div>
   );
 }
 
@@ -70,10 +93,11 @@ export default function Frame() {
       <CyberpunkGrid />
       <style jsx global>{`
         .grid-cell {
-          background: linear-gradient(45deg, #ff00ff20, #8a2be220);
-          border: 1px solid #ff00ff40;
+          background: linear-gradient(45deg, ${NEON_PURPLE}20, ${NEON_PINK}20);
+          border: 1px solid ${NEON_PURPLE}40;
           border-radius: 4px;
           aspect-ratio: 1;
+          transform-style: preserve-3d;
           transition: all 0.3s ease;
         }
         
